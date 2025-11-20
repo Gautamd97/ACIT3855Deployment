@@ -1,0 +1,35 @@
+{
+  "num_admissions_batches": 46,
+  "recent_batch_data": [
+    {
+      "batch_average": 48.0,
+      "batch_count": 2,
+      "batch_timestamp": "2025-10-01T12:00:00Z",
+      "batch_id": "batch-001"
+    },
+    {
+      "batch_average": 48.0,
+      "batch_count": 2,
+      "batch_timestamp": "2025-10-01T12:00:00Z",
+      "batch_id": "batch-001"
+    },
+    {
+      "batch_average": 48.0,
+      "batch_count": 2,
+      "batch_timestamp": "2025-10-01T12:00:00Z",
+      "batch_id": "batch-001"
+    },
+    {
+      "batch_average": 48.0,
+      "batch_count": 2,
+      "batch_timestamp": "2025-10-01T12:00:00Z",
+      "batch_id": "batch-001"
+    },
+    {
+      "batch_average": 48.0,
+      "batch_count": 2,
+      "batch_timestamp": "2025-10-01T12:00:00Z",
+      "batch_id": "batch-001"
+    }
+  ]
+}

@@ -1,0 +1,166 @@
+openapi: 3.0.0
+info:
+  title: Hospital Analyzer API
+  version: "1.0.0"
+  description: Inspect Kafka queue for hospital events.
+
+paths:
+  /hospital/admission/history:
+    get:
+      summary: Get an admission/discharge event from the Kafka queue by index
+      description: >
+        Returns the admission/discharge event (type "admission_created")
+        at the given index among all admission events in the Kafka topic.
+      operationId: app.get_admission_event
+      parameters:
+        - name: index
+          in: query
+          required: true
+          description: Index of the admission event (0-based, per-type index)
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        '200':
+          description: Admission event found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdmissionEvent'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        '404':
+          description: No event at that index
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+
+  /hospital/capacity/history:
+    get:
+      summary: Get a capacity snapshot event from the Kafka queue by index
+      description: >
+        Returns the capacity snapshot event (type "capacity_snapshot")
+        at the given index among all capacity events in the Kafka topic.
+      operationId: app.get_capacity_event
+      parameters:
+        - name: index
+          in: query
+          required: true
+          description: Index of the capacity event (0-based, per-type index)
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        '200':
+          description: Capacity event found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapacityEvent'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        '404':
+          description: No event at that index
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+
+  /stats:
+    get:
+      summary: Get statistics about events currently in the Kafka queue
+      description: >
+        Returns counts of each event type found by scanning the entire queue.
+      operationId: app.get_stats
+      responses:
+        '200':
+          description: Statistics returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventStats'
+
+components:
+  schemas:
+    AdmissionEvent:
+      type: object
+      properties:
+        batchId:
+          type: string
+        senderId:
+          type: string
+        reportDate:
+          type: string
+          format: date
+        sentAt:
+          type: string
+          format: date-time
+        version:
+          type: string
+        encounterId:
+          type: string
+        event:
+          type: string
+          description: "admission or discharge"
+        recordedAt:
+          type: string
+          format: date-time
+        patientAge:
+          type: integer
+        trace_id:
+          type: string
+
+    CapacityEvent:
+      type: object
+      properties:
+        batchId:
+          type: string
+        senderId:
+          type: string
+        reportDate:
+          type: string
+          format: date
+        sentAt:
+          type: string
+          format: date-time
+        version:
+          type: string
+        unitId:
+          type: string
+        totalBeds:
+          type: integer
+        occupiedBeds:
+          type: integer
+        recordedAt:
+          type: string
+          format: date-time
+        trace_id:
+          type: string
+
+    EventStats:
+      type: object
+      required:
+        - num_admission_events
+        - num_capacity_events
+      properties:
+        num_admission_events:
+          type: integer
+          example: 10
+        num_capacity_events:
+          type: integer
+          example: 15
+
+    ErrorMessage:
+      type: object
+      properties:
+        message:
+          type: string

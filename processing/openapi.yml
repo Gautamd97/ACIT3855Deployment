@@ -1,0 +1,55 @@
+openapi: 3.0.0
+info:
+  title: Stats API
+  version: "1.0.0"
+  description: Returns cumulative and numeric statistics for hospital events.
+paths:
+  /stats:
+    get:
+      summary: Gets the event stats
+      operationId: app.get_stats
+      description: Admission/Capacity statistics maintained by the scheduler.
+      responses:
+        '200':
+          description: Successfully returned a stats object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadingStats'
+        '404':
+          description: Statistics do not exist
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+components:
+  schemas:
+    ReadingStats:
+      type: object
+      required:
+        - num_admission_events
+        - num_capacity_snapshots
+        - max_patient_age
+        - max_occupied_beds
+        - last_updated
+      properties:
+        num_admission_events:
+          type: integer
+          example: 203
+        num_capacity_snapshots:
+          type: integer
+          example: 200
+        max_patient_age:
+          type: integer
+          nullable: true
+          example: 89
+        max_occupied_beds:
+          type: integer
+          nullable: true
+          example: 25
+        last_updated:
+          type: string
+          format: date-time
+          example: "2025-10-16T16:12:33Z"

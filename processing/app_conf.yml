@@ -1,0 +1,15 @@
+version: 1
+
+datastore:
+  filename: data.json        
+
+scheduler:
+  interval: 5                
+
+eventstores:
+  admissions:
+    url: "http://storage:8090/hospital/admissions"
+    # url: "http://127.0.0.1:8090/hospital/admission"
+  capacity:
+    url: "http://storage:8090/hospital/capacity"
+    # url: "http://127.0.0.1:8090/hospital/capacity"

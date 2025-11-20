@@ -1,0 +1,138 @@
+version: "3.9"
+
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    volumes:
+      - zookeeper_data:/opt/zookeeper-3.4.13/data
+
+  kafka:
+    image: wurstmeister/kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_CREATE_TOPICS: "events:1:1"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data/kafka:/kafka    
+
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: batman
+      MYSQL_USER: gautam
+      MYSQL_PASSWORD: your_password
+    ports:
+      - "3307:3306"     # host 3307 -> container 3306
+    volumes:
+      - ./data/database:/var/lib/mysql
+
+  receiver:
+    build:
+      context: ./receiver
+      dockerfile: Dockerfile
+    depends_on:
+      - kafka
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config/receiver:/app/config
+      - ./logs/receiver:/app/logs
+
+  storage:
+    build:
+      context: ./storage
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+      - kafka
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./config/storage:/app/config
+      - ./logs/storage:/app/logs
+
+  processing:
+    build:
+      context: ./processing
+      dockerfile: Dockerfile
+    depends_on:
+      - storage
+    ports:
+      - "8100:8100"
+    volumes:
+      - ./config/processing:/app/config
+      - ./logs/processing:/app/logs
+      - ./data/processing:/app/data   # JSON stats file lives here
+
+  analyzer:
+    build:
+      context: ./analyzer
+      dockerfile: Dockerfile
+    depends_on:
+      - kafka
+    ports:
+      - "8110:8110"
+    volumes:
+      - ./config/analyzer:/app/config
+      - ./logs/analyzer:/app/logs
+
+volumes:
+  zookeeper_data:
+
+# version: '3.8'
+
+# services:
+#   zookeeper:
+#     image: wurstmeister/zookeeper
+#     container_name: zookeeper
+#     ports:
+#       - "2181:2181"
+
+#   kafka:
+#     image: wurstmeister/kafka
+#     container_name: kafka
+#     command: [ "start-kafka.sh" ]
+#     ports:
+#       - "9092:9092"
+#     environment:
+#       KAFKA_CREATE_TOPICS: "events:1:1"
+
+#       KAFKA_ADVERTISED_HOST_NAME: localhost
+
+#       KAFKA_LISTENERS: INSIDE://:29092,OUTSIDE://:9092
+#       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+#       KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:29092,OUTSIDE://localhost:9092
+#       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+
+#       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+#     volumes:
+#       - /var/run/docker.sock:/var/run/docker.sock
+#     depends_on:
+#       - zookeeper
+
+#   db:
+#     image: mysql
+#     container_name: db
+#     restart: always
+#     environment:
+#       MYSQL_RANDOM_ROOT_PASSWORD: 1
+#       MYSQL_USER: gautam
+#       MYSQL_PASSWORD: Passw0rd
+#       MYSQL_DATABASE: batman
+#     ports:
+#       - "3307:3306"
+#     volumes:
+#       - my-db:/var/lib/mysql
+
+# volumes:
+#   my-db:

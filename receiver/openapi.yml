@@ -1,0 +1,154 @@
+openapi: 3.0.3
+info:
+  title: Hospital API (Receiver)
+  version: "1.0.0"
+  description: This API receives daily hospital patient logs and capacity snapshots from hospitals throughout BC.
+  contact:
+    email: gdhoopar@my.bcit.ca
+
+paths:
+  /hospital/admissions:
+    post:
+      summary: Reports a batch of admissions/discharges
+      description: Adds a batch of patient admissions/discharges for a specific hospital and report date.
+      operationId: app.report_admission_discharge_batch   # <-- points to app.py
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdmissionDischargeBatch'
+      responses:
+        "201":
+          description: Batch successfully received and forwarded
+        "400":
+          description: Invalid input (missing/invalid fields)
+        "503":
+          description: Storage service unreachable
+
+  /hospital/capacity:
+    post:
+      summary: Reports a batch of hospital room availability
+      description: Adds a batch of hospital room availability readings.
+      operationId: app.report_capacity_batch              # <-- points to app.py
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CapacitySnapshotBatch'
+      responses:
+        "201":
+          description: Batch successfully received and forwarded
+        "400":
+          description: Invalid input (missing/invalid fields)
+        "503":
+          description: Storage service unreachable
+
+components:
+  schemas:
+    AdmissionDischargeBatch:
+      type: object
+      required:
+        - batchId
+        - senderId
+        - reportDate
+        - sentAt
+        - version
+        - items
+      properties:
+        batchId:
+          type: string
+          description: Unique ID for this batch upload. (No UUID format enforced)
+        senderId:
+          type: string
+          description: User/device/hospital ID sending the batch.
+        reportDate:
+          type: string
+          format: date
+          description: Local service date covered by this report.
+        sentAt:
+          type: string
+          format: date-time
+          description: When the batch was sent by the producer.
+        version:
+          type: string
+          description: Schema version.
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/AdmissionDischargeItem'
+
+    AdmissionDischargeItem:
+      type: object
+      required:
+        - encounterId
+        - event
+        - recordedAt
+        - patientAge
+      properties:
+        encounterId:
+          type: string
+          description: Hospital encounter/visit identifier.
+        event:
+          type: string
+          enum: [admission, discharge]
+        recordedAt:
+          type: string
+          format: date-time
+        patientAge:
+          type: integer
+          minimum: 0
+          description: Patient age in years (numeric).
+
+    CapacitySnapshotBatch:
+      type: object
+      required:
+        - batchId
+        - senderId
+        - reportDate
+        - sentAt
+        - version
+        - items
+      properties:
+        batchId:
+          type: string
+          description: Unique ID for this batch upload. (No UUID format enforced)
+        senderId:
+          type: string
+          description: User/device/hospital ID sending the batch.
+        reportDate:
+          type: string
+          format: date
+        sentAt:
+          type: string
+          format: date-time
+        version:
+          type: string
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/CapacitySnapshotItem'
+
+    CapacitySnapshotItem:
+      type: object
+      required:
+        - unitId
+        - totalBeds
+        - occupiedBeds
+        - recordedAt
+      properties:
+        unitId:
+          type: string
+          description: Unit or ward identifier (e.g., ICU-2A).
+        totalBeds:
+          type: integer
+          minimum: 0
+        occupiedBeds:
+          type: integer
+          minimum: 0
+        recordedAt:
+          type: string
+          format: date-time

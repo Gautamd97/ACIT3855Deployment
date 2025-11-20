@@ -1,0 +1,22 @@
+2025-11-13 11:32:09,365 - basicLogger - INFO - GET /stats requested
+2025-11-13 11:32:10,546 - basicLogger - INFO - Stats computed: 26 admission, 9 capacity
+2025-11-13 11:32:35,177 - basicLogger - INFO - GET /stats requested
+2025-11-13 11:32:36,271 - basicLogger - INFO - Stats computed: 26 admission, 9 capacity
+2025-11-13 11:47:46,275 - basicLogger - INFO - GET /stats requested
+2025-11-13 11:47:47,341 - basicLogger - INFO - Stats computed: 26 admission, 9 capacity
+2025-11-13 11:48:38,845 - basicLogger - INFO - GET /stats requested
+2025-11-13 11:48:39,915 - basicLogger - INFO - Stats computed: 28 admission, 9 capacity
+2025-11-13 11:56:44,222 - basicLogger - INFO - GET /hospital/admission-from-queue?index=0
+2025-11-13 11:56:44,352 - basicLogger - INFO - Found admission event at index 0
+2025-11-13 11:57:24,560 - basicLogger - INFO - GET /hospital/capacity-from-queue?index=0
+2025-11-13 11:57:24,612 - basicLogger - INFO - Found capacity event at index 0
+2025-11-13 11:57:48,510 - basicLogger - INFO - GET /hospital/admission-from-queue?index=9999
+2025-11-13 11:57:49,661 - basicLogger - INFO - No admission event at index 9999
+2025-11-13 11:58:09,752 - basicLogger - INFO - GET /hospital/capacity-from-queue?index=9999
+2025-11-13 11:58:10,818 - basicLogger - INFO - No capacity event at index 9999
+2025-11-13 11:58:19,633 - basicLogger - INFO - GET /stats requested
+2025-11-13 11:58:20,693 - basicLogger - INFO - Stats computed: 28 admission, 9 capacity
+2025-11-13 11:58:51,671 - basicLogger - INFO - GET /stats requested
+2025-11-13 11:58:52,750 - basicLogger - INFO - Stats computed: 28 admission, 9 capacity
+2025-11-13 13:34:36,284 - basicLogger - INFO - GET /stats requested
+2025-11-13 13:34:37,590 - basicLogger - INFO - Stats computed: 28 admission, 9 capacity

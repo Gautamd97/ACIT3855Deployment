@@ -1,0 +1,35 @@
+{
+  "num_capacity_batches": 59,
+  "recent_batch_data": [
+    {
+      "batch_average": 87.22222222222221,
+      "batch_count": 3,
+      "batch_timestamp": "2025-09-18T15:05:00Z",
+      "batch_id": "b2c7a6ff-5f71-4b5e-9e0f-0a2222bbbbbb"
+    },
+    {
+      "batch_average": 87.22222222222221,
+      "batch_count": 3,
+      "batch_timestamp": "2025-09-18T15:05:00Z",
+      "batch_id": "b2c7a6ff-5f71-4b5e-9e0f-0a2222bbbbbb"
+    },
+    {
+      "batch_average": 89.16666666666667,
+      "batch_count": 2,
+      "batch_timestamp": "2025-10-02T12:00:00Z",
+      "batch_id": "bbbbbbbb-cccc-dddd-eeee-ffffffffffff"
+    },
+    {
+      "batch_average": 89.16666666666667,
+      "batch_count": 2,
+      "batch_timestamp": "2025-10-02T12:00:00Z",
+      "batch_id": "bbbbbbbb-cccc-dddd-eeee-ffffffffffff"
+    },
+    {
+      "batch_average": 89.16666666666667,
+      "batch_count": 2,
+      "batch_timestamp": "2025-10-02T12:00:00Z",
+      "batch_id": "bbbbbbbb-cccc-dddd-eeee-ffffffffffff"
+    }
+  ]
+}
