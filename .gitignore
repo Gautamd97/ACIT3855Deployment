@@ -1,0 +1,30 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environments
+venv/
+env/
+
+# Runtime logs
+logs/
+*/logs/
+
+# Kafka, MySQL, and processing data
+data/
+*/data/
+*.db
+
+# Compiled code
+*.sqlite
+*.db
+storage.db
+
+# Environment-specific config
+config/prod/
+*prod*.yml
+*.env
+
+# Docker artifacts
+*.pid
+docker-compose.override.yml
