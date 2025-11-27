@@ -14,12 +14,6 @@
       dest: /home/lab3885/ACIT3855Deployment
       version: main
 
-  - name: Copy production configs
-    copy:
-      src: ./prod-config/
-      dest: /home/lab3885/ACIT3855Deployment/config/prod/
-      mode: '0644'
-
   - name: Ensure volumes exist
     file:
       path: "{{ item }}"
