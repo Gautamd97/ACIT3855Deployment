@@ -10,7 +10,7 @@
 
   - name: Pull latest code
     git:
-      repo: 'git@github.com/Gautamd97/ACIT3855Deployment.git'
+      repo: 'https://github.com/Gautamd97/ACIT3855Deployment.git'
       dest: /home/lab3885/ACIT3855Deployment
       version: main
 
