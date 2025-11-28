@@ -2,13 +2,13 @@ openapi: "3.0.3"
 version: 1
 
 events:
-  hostname: kafka
+  hostname: kafka  
   port: 9092
   topic: events
 
 datastore:
   user: gautam
   password: Passw0rd
-  hostname: db
-  port: 3306   
+  hostname: db  
+  port: 3306               
   db: batman

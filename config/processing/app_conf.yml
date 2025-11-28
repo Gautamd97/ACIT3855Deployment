@@ -1,0 +1,13 @@
+version: 1
+
+datastore:
+  filename: /app/data/processing_stats.json      
+
+scheduler:
+  interval: 5                
+
+eventstores:
+  admissions:
+    url: "http://storage:8090/hospital/admission"
+  capacity:
+    url: "http://storage:8090/hospital/capacity"

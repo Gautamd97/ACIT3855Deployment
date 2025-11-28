@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import yaml
 
-with open("app_conf.yml", "r") as f:
+with open("/app/config/app_conf.yml", "r") as f:
     APP_CONF = yaml.safe_load(f.read())
 
 db_conf = APP_CONF["datastore"]

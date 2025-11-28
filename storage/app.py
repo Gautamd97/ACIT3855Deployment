@@ -9,9 +9,15 @@ import connexion
 from connexion import NoContent
 import yaml
 from pykafka import KafkaClient
-from models import AdmissionDischarge, Capacity
+from models import AdmissionDischarge, Capacity, Base
+from database import ENGINE
+import time
+from sqlalchemy.exc import OperationalError
+from models import Base
+from database import ENGINE
 
-with open("app_conf.yml", "r") as f:
+
+with open("/app/config/app_conf.yml", "r") as f:
     APP_CONF = yaml.safe_load(f.read())
 
 db_conf = APP_CONF["datastore"]
@@ -24,7 +30,7 @@ KAFKA_HOST = APP_CONF["events"]["hostname"]
 KAFKA_PORT = APP_CONF["events"]["port"]
 KAFKA_TOPIC = APP_CONF["events"]["topic"].encode()
 
-with open("log_conf.yml", "r") as f:
+with open("/app/config/log_conf.yml", "r") as f:
     LOG_CONF = yaml.safe_load(f.read())
 logging.config.dictConfig(LOG_CONF)
 logger = logging.getLogger("basicLogger")
@@ -150,13 +156,38 @@ def get_capacity_readings(start_timestamp, end_timestamp):
         ).scalars().all()
         return [_row_to_dict(r) for r in rows], 200
 
+def init_db(max_retries: int = 10, delay: int = 5):
+    """Ensure all tables exist in the target database, retrying until DB is ready."""
+    attempt = 1
+    while attempt <= max_retries:
+        try:
+            logger.info("Initializing DB (attempt %s/%s)...", attempt, max_retries)
+            Base.metadata.create_all(ENGINE)
+            logger.info("Database tables ensured/created successfully.")
+            return
+        except OperationalError as e:
+            logger.warning(
+                "DB not ready yet (attempt %s/%s): %s. Retrying in %ss...",
+                attempt, max_retries, e, delay
+            )
+            time.sleep(delay)
+            attempt += 1
+        except Exception as e:
+            logger.exception("Unexpected error during init_db: %s", e)
+            break
+
+    logger.error("Could not initialize DB after %s attempts. Continuing without DB.", max_retries)
+
 
 app = connexion.FlaskApp(__name__, specification_dir=".")
 app.add_api("openapi.yml", strict_validation=True, validate_responses=False)
 
 if __name__ == "__main__":
+    init_db()
+
     t = Thread(target=process_messages)
     t.daemon = True
     t.start()
+    
     logger.info("Background Kafka consumer thread started")
     app.run(port=8090,host="0.0.0.0")

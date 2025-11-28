@@ -7,12 +7,12 @@ import yaml
 from pykafka import KafkaClient
 from connexion import NoContent
 
-with open("log_conf.yml", "r") as f:
+with open("/app/config/log_conf.yml", "r") as f:
     LOG_CONF = yaml.safe_load(f)
 logging.config.dictConfig(LOG_CONF)
 logger = logging.getLogger("basicLogger")
 
-with open("app_conf.yml", "r") as f:
+with open("/app/config/app_conf.yml", "r") as f:
     APP_CONF = yaml.safe_load(f)
 
 KAFKA_HOSTS = f"{APP_CONF['events']['hostname']}:{APP_CONF['events']['port']}"

@@ -9,12 +9,13 @@ import yaml
 from connexion import NoContent
 from pykafka import KafkaClient
 
-with open("log_conf.yml", "r") as f:
+with open("/app/config/log_conf.yml", "r") as f:
     LOG_CONF = yaml.safe_load(f.read())
+    
 logging.config.dictConfig(LOG_CONF)
 logger = logging.getLogger("basicLogger")
 
-with open("app_conf.yml", "r") as f:
+with open("/app/config/app_conf.yml", "r") as f:
     APP_CONF = yaml.safe_load(f.read())
 
 STORAGE_URL = APP_CONF.get("storage", {}).get("url")

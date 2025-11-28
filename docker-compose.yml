@@ -32,7 +32,7 @@ services:
       MYSQL_USER: gautam
       MYSQL_PASSWORD: Passw0rd
     ports:
-      - "3307:3306"    
+      - "3307:3306"   
     volumes:
       - ./data/database:/var/lib/mysql
 
@@ -72,7 +72,7 @@ services:
     volumes:
       - ./config/processing:/app/config
       - ./logs/processing:/app/logs
-      - ./data/processing:/app/data   
+      - ./data/processing:/app/data
 
   analyzer:
     build:
