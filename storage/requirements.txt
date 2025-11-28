@@ -1,9 +1,0 @@
-connexion[flask,uvicorn,swagger-ui]
-pykafka
-SQLAlchemy
-pymysql
-python-dateutil
-PyYAML
-requests
-httpx
-apscheduler
