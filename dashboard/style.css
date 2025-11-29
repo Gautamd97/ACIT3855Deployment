@@ -1,0 +1,173 @@
+/* Global layout */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #0b0c10;
+  color: #eaeaea;
+}
+
+/* Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: #151820;
+  border-bottom: 1px solid #232735;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+#logo {
+  height: 60px;
+  width: auto;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.subtitle {
+  margin: 0.2rem 0 0;
+  font-size: 0.9rem;
+  color: #a0a4b8;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.pill {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid #3f8efc;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Main layout */
+main {
+  padding: 1.5rem 2rem 2.5rem;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: 1.5rem;
+}
+
+#update-card {
+  grid-column: 1 / -1;
+}
+
+/* Cards */
+.card {
+  background: #151820;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  border: 1px solid #232735;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.card h2 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: 1.2rem;
+}
+
+.endpoint-label {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  color: #9ba1b5;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+thead {
+  background: #202431;
+}
+
+th, td {
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid #232735;
+}
+
+th {
+  text-align: left;
+  font-weight: 600;
+}
+
+tbody tr:nth-child(even) {
+  background: #171b26;
+}
+
+/* Random event boxes */
+.random-events {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.random-card h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+}
+
+pre {
+  margin: 0;
+  padding: 0.5rem;
+  background: #10121a;
+  border-radius: 8px;
+  border: 1px solid #232735;
+  overflow-x: auto;
+  font-size: 0.8rem;
+  font-family: "Cascadia Code", "Fira Code", monospace;
+}
+
+/* Errors */
+.error-msg {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  color: #ff6b81;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 0.75rem 1rem 1.5rem;
+  font-size: 0.8rem;
+  color: #7f8494;
+  border-top: 1px solid #232735;
+  background: #0b0c10;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  main {
+    grid-template-columns: 1fr;
+  }
+
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .header-right {
+    align-self: flex-end;
+  }
+}

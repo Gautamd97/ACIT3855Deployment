@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hospital Event Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <!-- Put logo.png in dashboard/img/logo.png -->
+      <img src="img/logo.png" alt="Project Logo" id="logo">
+      <div>
+        <h1>Hospital Events Dashboard</h1>
+        <p class="subtitle">ACIT 3855 – Receiver / Processing / Analyzer</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="pill">Auto-refreshing</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="card" id="processing-card">
+      <h2>Processing Service Stats</h2>
+      <p class="endpoint-label" id="processing-endpoint-label"></p>
+      <table id="processing-stats">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="2">Loading…</td></tr>
+        </tbody>
+      </table>
+      <p class="error-msg" id="processing-error"></p>
+    </section>
+
+    <section class="card" id="analyzer-card">
+      <h2>Analyzer Service Stats</h2>
+      <p class="endpoint-label" id="analyzer-endpoint-label"></p>
+      <table id="analyzer-stats">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="2">Loading…</td></tr>
+        </tbody>
+      </table>
+      <p class="error-msg" id="analyzer-error"></p>
+
+      <div class="random-events">
+        <div class="random-card">
+          <h3>Random Admission Event</h3>
+          <p class="endpoint-label" id="admission-endpoint-label"></p>
+          <pre id="random-admission">Loading…</pre>
+          <p class="error-msg" id="admission-error"></p>
+        </div>
+
+        <div class="random-card">
+          <h3>Random Capacity Event</h3>
+          <p class="endpoint-label" id="capacity-endpoint-label"></p>
+          <pre id="random-capacity">Loading…</pre>
+          <p class="error-msg" id="capacity-error"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="update-card">
+      <h2>Update Status</h2>
+      <p>Last updated: <span id="last-updated">Never</span></p>
+      <p>Refresh interval: <span id="refresh-interval"></span> seconds</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>BCIT ACIT 3855 Lab 10 • Dashboard served via Nginx</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
