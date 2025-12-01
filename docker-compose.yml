@@ -88,7 +88,7 @@ services:
 
   dashboard:
     build:
-      context: ./Dashboard 
+      context: ./dashboard 
     image: acit3855-dashboard
     container_name: acit3855-dashboard
     ports:
