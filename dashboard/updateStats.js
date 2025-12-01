@@ -1,6 +1,4 @@
-/* UPDATE THESE VALUES TO MATCH YOUR SETUP */
-
-const PROCESSING_STATS_API_URL = "http://gautamdhoopar3855.westus3.cloudapp.azure.com:8100/processing.json"
+const PROCESSING_STATS_API_URL = "http://gautamdhoopar3855.westus3.cloudapp.azure.com:8100/stats"
 
 const ANALYZER_API_URL = {
     stats: "http://gautamdhoopar3855.westus3.cloudapp.azure.com:8110/stats",
@@ -8,7 +6,6 @@ const ANALYZER_API_URL = {
     capacity: "http://gautamdhoopar3855.westus3.cloudapp.azure.com:8110/hospital/capacity/history?index=0"
 }
 
-// This function fetches and updates the general statistics
 const makeReq = (url, cb) => {
     fetch(url)
         .then(res => res.json())
