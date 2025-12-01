@@ -92,7 +92,7 @@ services:
     image: acit3855-dashboard
     container_name: acit3855-dashboard
     ports:
-      - "80:80"
+      - "2026:80"
     depends_on:
       - processing
       - analyzer
