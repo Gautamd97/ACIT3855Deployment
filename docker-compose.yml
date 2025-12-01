@@ -86,5 +86,16 @@ services:
       - ./config/analyzer:/app/config
       - ./logs/analyzer:/app/logs
 
+  dashboard:
+    build:
+      context: ./Dashboard 
+    image: acit3855-dashboard
+    container_name: acit3855-dashboard
+    ports:
+      - "6969:80"
+    depends_on:
+      - processing
+      - analyzer
+
 volumes:
   zookeeper_data:
