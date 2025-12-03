@@ -1,9 +1,9 @@
-const PROCESSING_STATS_API_URL = "http://gautamdhoopar3855.westus3.cloudapp.azure.com:8100/stats"
+const PROCESSING_STATS_API_URL = "/processing/stats"
 
 const ANALYZER_API_URL = {
-    stats: "http://gautamdhoopar3855.westus3.cloudapp.azure.com:8110/stats",
-    admission: "http://gautamdhoopar3855.westus3.cloudapp.azure.com:8110/hospital/admission/history?index=0",
-    capacity: "http://gautamdhoopar3855.westus3.cloudapp.azure.com:8110/hospital/capacity/history?index=0"
+    stats: "/analyzer/stats/stats",
+    admission: "/analyzer/hospital/admission/history?index=0",
+    capacity: "/analyzer/hospital/capacity/history?index=0"
 }
 
 const makeReq = (url, cb) => {
