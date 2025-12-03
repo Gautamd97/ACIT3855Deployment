@@ -1,7 +1,7 @@
 const PROCESSING_STATS_API_URL = "/processing/stats"
 
 const ANALYZER_API_URL = {
-    stats: "/analyzer/stats/stats",
+    stats: "/analyzer/stats",
     admission: "/analyzer/hospital/admission/history?index=0",
     capacity: "/analyzer/hospital/capacity/history?index=0"
 }
