@@ -17,8 +17,9 @@ const makeReq = (url, cb) => {
         })
 }
 
-const updateCodeDiv = (result, elemId) => document.getElementById(elemId).innerText = JSON.stringify(result)
-
+const updateCodeDiv = (result, elemId) => {
+    document.getElementById(elemId).innerText = JSON.stringify(result, null, 2)
+}
 const getLocaleDateStr = () => (new Date()).toLocaleString()
 
 const getStats = () => {
