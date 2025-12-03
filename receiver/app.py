@@ -185,7 +185,7 @@ def report_capacity_batch(body):
     return NoContent, 201
 
 app = connexion.FlaskApp(__name__, specification_dir="")
-app.add_api("openapi.yml", strict_validation=True, validate_responses=True)
+app.add_api("openapi.yml", strict_validation=True, validate_responses=False)
 
 CORS(app.app)
 
