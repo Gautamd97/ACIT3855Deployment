@@ -18,7 +18,7 @@ const makeReq = (url, cb) => {
 }
 
 const updateCodeDiv = (result, elemId) => {
-    document.getElementById(elemId).innerText = JSON.stringify(result, null, 2)
+    document.getElementById(elemId).innerText = JSON.stringify(result)
 }
 const getLocaleDateStr = () => (new Date()).toLocaleString()
 
@@ -26,6 +26,7 @@ const getStats = () => {
     document.getElementById("last-updated-value").innerText = getLocaleDateStr()
     
     makeReq(PROCESSING_STATS_API_URL, (result) => updateCodeDiv(result, "processing-stats"))
+    
     makeReq(ANALYZER_API_URL.stats, (result) => updateCodeDiv(result, "analyzer-stats"))
     makeReq(ANALYZER_API_URL.admission, (result) => updateCodeDiv(result, "event-admission"))
     makeReq(ANALYZER_API_URL.capacity, (result) => updateCodeDiv(result, "event-capacity"))
