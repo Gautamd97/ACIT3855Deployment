@@ -9,6 +9,9 @@ import yaml
 from connexion import NoContent
 from pykafka import KafkaClient
 
+from connexion.middleware import MiddlewarePosition
+from starlette.middleware.cors import CORSMiddleware
+
 with open("/app/config/log_conf.yml", "r") as f:
     LOG_CONF = yaml.safe_load(f.read())
     
@@ -184,6 +187,15 @@ def report_capacity_batch(body):
 
 app = connexion.FlaskApp(__name__, specification_dir="")
 app.add_api("openapi.yml", strict_validation=True, validate_responses=False)
+
+app.add_middleware(
+    CORSMiddleware,
+    position=MiddlewarePosition.BEFORE_EXCEPTION,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 if __name__ == "__main__":
     app.run(port=8080, host="0.0.0.0")
