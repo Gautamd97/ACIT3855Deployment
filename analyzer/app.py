@@ -7,8 +7,6 @@ import yaml
 from pykafka import KafkaClient
 from connexion import NoContent
 
-from flask_cors import CORS
-
 with open("/app/config/log_conf.yml", "r") as f:
     LOG_CONF = yaml.safe_load(f)
 logging.config.dictConfig(LOG_CONF)
@@ -156,8 +154,6 @@ def get_stats():
 
 app = connexion.FlaskApp(__name__, specification_dir=".")
 app.add_api("openapi.yml", strict_validation=True, validate_responses=False)
-
-CORS(app.app)
 
 if __name__ == "__main__":
     app.run(port=8110, host="0.0.0.0")
