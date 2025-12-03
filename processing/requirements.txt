@@ -7,3 +7,4 @@ PyYAML
 requests
 httpx
 apscheduler
+flask_cors
