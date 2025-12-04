@@ -23,6 +23,7 @@ STORAGE_URL = APP_CONF.get("storage", {}).get("url")
 KAFKA_HOSTS = f"{APP_CONF['events']['hostname']}:{APP_CONF['events']['port']}"
 KAFKA_TOPIC = APP_CONF['events']['topic'].encode()
 
+_KAFKA_CLIENT = None
 _PRODUCER_ADM = None
 _PRODUCER_CAP = None
 
@@ -41,18 +42,23 @@ def _now_iso() -> str:
     return datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
 def _get_producer(cache_key: str):
-    global _PRODUCER_ADM, _PRODUCER_CAP
+    global _KAFKA_CLIENT, _PRODUCER_ADM, _PRODUCER_CAP
+
+    if _KAFKA_CLIENT is None:
+        logger.info("Receiver: creating global Kafka client to %s", KAFKA_HOSTS)
+        _KAFKA_CLIENT = KafkaClient(hosts=KAFKA_HOSTS)
+
     if cache_key == "adm":
         if _PRODUCER_ADM is None:
-            client = KafkaClient(hosts=KAFKA_HOSTS)
-            topic = client.topics[KAFKA_TOPIC]
+            topic = _KAFKA_CLIENT.topics[KAFKA_TOPIC]
             _PRODUCER_ADM = topic.get_sync_producer()
+            logger.info("Receiver: created admission producer for topic=%s", KAFKA_TOPIC.decode())
         return _PRODUCER_ADM
     else:
         if _PRODUCER_CAP is None:
-            client = KafkaClient(hosts=KAFKA_HOSTS)
-            topic = client.topics[KAFKA_TOPIC]
+            topic = _KAFKA_CLIENT.topics[KAFKA_TOPIC]
             _PRODUCER_CAP = topic.get_sync_producer()
+            logger.info("Receiver: created capacity producer for topic=%s", KAFKA_TOPIC.decode())
         return _PRODUCER_CAP
 
 
@@ -119,7 +125,6 @@ def report_admission_discharge_batch(body):
 
 
 def report_capacity_batch(body):
-
     trace = _trace_id()
     items = _require_items(body, "capacity")
     if items is None:
@@ -139,7 +144,7 @@ def report_capacity_batch(body):
     required = ("unitId", "totalBeds", "occupiedBeds", "recordedAt")
 
     try:
-        producer = _get_producer("cap")
+        producer = _get_producer("cap")   # 👉 uses global client + cached producer
     except Exception as e:
         logger.exception("Receiver couldn't connect to Kafka (%s)", e)
         return NoContent, 503
@@ -184,7 +189,6 @@ def report_capacity_batch(body):
 
 app = connexion.FlaskApp(__name__, specification_dir="")
 app.add_api("openapi.yml", strict_validation=True, validate_responses=False)
-
 
 if __name__ == "__main__":
     app.run(port=8080, host="0.0.0.0")

@@ -9,6 +9,8 @@ import connexion
 from connexion import NoContent
 import yaml
 from pykafka import KafkaClient
+from pykafka.common import OffsetType          # PART 3: for consumer options
+from pykafka.exceptions import KafkaException  # PART 3: to catch Kafka-specific errors
 from models import AdmissionDischarge, Capacity, Base
 from database import ENGINE
 import time
@@ -30,25 +32,40 @@ KAFKA_HOST = APP_CONF["events"]["hostname"]
 KAFKA_PORT = APP_CONF["events"]["port"]
 KAFKA_TOPIC = APP_CONF["events"]["topic"].encode()
 
+_KAFKA_CLIENT = None
+_CONSUMER = None
+
 with open("/app/config/log_conf.yml", "r") as f:
     LOG_CONF = yaml.safe_load(f.read())
 logging.config.dictConfig(LOG_CONF)
 logger = logging.getLogger("basicLogger")
 
-ENGINE = create_engine(DB_ENGINE_STRING, echo=False, future=True)
+ENGINE = create_engine(
+    DB_ENGINE_STRING,
+    echo=False,
+    future=True,
+    pool_size=5,         
+    pool_recycle=3600,   
+    pool_pre_ping=True  
+)
 SessionLocal = sessionmaker(bind=ENGINE, autoflush=False, autocommit=False, future=True)
+
 
 def _parse_dt(s: str):
     return parser.isoparse(s)
 
+
 def _parse_date(s: str):
     return parser.isoparse(s).date()
+
 
 def _date_col(model):
     return getattr(model, "date_created", getattr(model, "recorded_at"))
 
+
 def _row_to_dict(obj):
     return {k: v for k, v in obj.__dict__.items() if k != "_sa_instance_state"}
+
 
 def create_admission_discharge(body):
     with SessionLocal() as session:
@@ -74,6 +91,7 @@ def create_admission_discharge(body):
             logger.exception("Failed to store admission/discharge: %s", e)
             return NoContent, 400
 
+
 def create_capacity(body):
     with SessionLocal() as session:
         try:
@@ -98,34 +116,85 @@ def create_capacity(body):
             logger.exception("Failed to store capacity: %s", e)
             return NoContent, 400
 
-def process_messages():
-    logger.info("Starting Kafka consumer (process_messages)")
+
+def _get_consumer():
+
+    global _KAFKA_CLIENT, _CONSUMER
+
+    if _CONSUMER is not None:
+        return _CONSUMER
+
     try:
-        client = KafkaClient(hosts=f"{KAFKA_HOST}:{KAFKA_PORT}")
-        topic = client.topics[KAFKA_TOPIC]
-        consumer = topic.get_simple_consumer()
-    except Exception as e:
-        logger.exception("Failed to connect to Kafka: %s", e)
-        return
+        logger.info("Storage: creating Kafka client to %s:%s", KAFKA_HOST, KAFKA_PORT)
+        _KAFKA_CLIENT = KafkaClient(hosts=f"{KAFKA_HOST}:{KAFKA_PORT}")
 
-    for msg in consumer:
-        if msg is None:
+        topic = _KAFKA_CLIENT.topics[KAFKA_TOPIC]
+        _CONSUMER = topic.get_simple_consumer(
+            reset_offset_on_start=False,
+            auto_offset_reset=OffsetType.LATEST,
+        )
+        logger.info("Storage: Kafka consumer created for topic=%s", KAFKA_TOPIC.decode())
+        return _CONSUMER
+
+    except KafkaException as e:
+        logger.warning("Storage: error creating Kafka consumer: %s", e)
+        _KAFKA_CLIENT = None
+        _CONSUMER = None
+        return None
+
+
+def process_messages():
+    """
+    Background loop that reads from Kafka forever.
+    If Kafka goes down, we catch the error, reset the consumer,
+    wait a bit, and retry without killing the service.
+    """
+    global _KAFKA_CLIENT, _CONSUMER
+
+    logger.info("Storage: starting Kafka consumer loop")
+
+    while True:
+        consumer = _get_consumer()
+        if consumer is None:
+            logger.info("Storage: Kafka unavailable, retrying in 5 seconds...")
+            time.sleep(5)
             continue
+
         try:
-            message = json.loads(msg.value.decode("utf-8"))
-            etype = message.get("type")
-            payload = message.get("payload", {})
+            for msg in consumer:
+                if msg is None:
+                    continue
 
-            logger.info("Kafka message received type=%s", etype)
+                try:
+                    message = json.loads(msg.value.decode("utf-8"))
+                    etype = message.get("type")
+                    payload = message.get("payload", {})
 
-            if etype == "admission_created":
-                create_admission_discharge(payload)
-            elif etype == "capacity_snapshot":
-                create_capacity(payload)
-            else:
-                logger.warning("Unknown message type: %s", etype)
-        except Exception as e:
-            logger.exception("Error processing Kafka message: %s", e)
+                    logger.info("Kafka message received type=%s", etype)
+
+                    if etype == "admission_created":
+                        create_admission_discharge(payload)
+                    elif etype == "capacity_snapshot":
+                        create_capacity(payload)
+                    else:
+                        logger.warning("Unknown message type: %s", etype)
+
+                except Exception as e:
+                    logger.exception("Storage: error processing Kafka message: %s", e)
+
+        except KafkaException as e:
+            logger.warning("Storage: exception in Kafka consumer loop: %s", e)
+            try:
+                if _CONSUMER is not None:
+                    _CONSUMER.stop()
+            except Exception:
+                pass
+
+            _CONSUMER = None
+            _KAFKA_CLIENT = None
+
+            logger.info("Storage: will retry Kafka connection in 5 seconds...")
+            time.sleep(5)
 
 
 def get_admission_readings(start_timestamp, end_timestamp):
@@ -142,6 +211,7 @@ def get_admission_readings(start_timestamp, end_timestamp):
         ).scalars().all()
         return [_row_to_dict(r) for r in rows], 200
 
+
 def get_capacity_readings(start_timestamp, end_timestamp):
     try:
         start = _parse_dt(start_timestamp)
@@ -155,6 +225,7 @@ def get_capacity_readings(start_timestamp, end_timestamp):
             select(Capacity).where(col >= start, col < end)
         ).scalars().all()
         return [_row_to_dict(r) for r in rows], 200
+
 
 def init_db(max_retries: int = 10, delay: int = 5):
     """Ensure all tables exist in the target database, retrying until DB is ready."""
@@ -188,6 +259,6 @@ if __name__ == "__main__":
     t = Thread(target=process_messages)
     t.daemon = True
     t.start()
-    
+
     logger.info("Background Kafka consumer thread started")
-    app.run(port=8090,host="0.0.0.0")
+    app.run(port=8090, host="0.0.0.0")
