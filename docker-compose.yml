@@ -119,5 +119,21 @@ services:
       - processing
       - analyzer
 
+  health:
+    build: ./health
+    container_name: acit3855deployment-health-1
+    ports:
+      - "8120:8120"
+    volumes:
+      - health_data:/data
+      - ./health/config:/app/config
+    depends_on:
+      - receiver
+      - storage
+      - processing
+      - analyzer
+
 volumes:
   zookeeper_data:
+  db_data:
+  health_data:
