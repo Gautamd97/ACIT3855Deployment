@@ -1,9 +1,12 @@
 const PROCESSING_STATS_API_URL = "/processing/stats"
 
+const randomIndex = () => Math.floor(Math.random() * 100) + 1;
+
+
 const ANALYZER_API_URL = {
     stats: "/analyzer/stats",
-    admission: "/analyzer/hospital/admission/history?index=0",
-    capacity: "/analyzer/hospital/capacity/history?index=0"
+    admission: () => `/analyzer/hospital/admission/history?index=${randomIndex()}`,
+    capacity: () => `/analyzer/hospital/capacity/history?index=${randomIndex()}`
 }
 
 const makeReq = (url, cb) => {
@@ -28,8 +31,8 @@ const getStats = () => {
     makeReq(PROCESSING_STATS_API_URL, (result) => updateCodeDiv(result, "processing-stats"))
     
     makeReq(ANALYZER_API_URL.stats, (result) => updateCodeDiv(result, "analyzer-stats"))
-    makeReq(ANALYZER_API_URL.admission, (result) => updateCodeDiv(result, "event-admission"))
-    makeReq(ANALYZER_API_URL.capacity, (result) => updateCodeDiv(result, "event-capacity"))
+    makeReq(ANALYZER_API_URL.admission(), (result) => updateCodeDiv(result, "event-admission"))
+    makeReq(ANALYZER_API_URL.capacity(), (result) => updateCodeDiv(result, "event-capacity"))
 }
 
 const updateErrorMessages = (message) => {
