@@ -23,6 +23,13 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./data/kafka:/kafka    
 
+    # Healthcheck for lab 11  
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9092 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
   db:
     image: mysql:5.7
     restart: always
@@ -36,12 +43,22 @@ services:
     volumes:
       - ./data/database:/var/lib/mysql
 
+    # healthcheck for lab 11
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u gautam -p$MYSQL_PASSWORD || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   receiver:
     build:
       context: ./receiver
       dockerfile: Dockerfile
+
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
+
     ports:
       - "8080:8080"
     volumes:
@@ -53,20 +70,24 @@ services:
       context: ./storage
       dockerfile: Dockerfile
     depends_on:
-      - db
-      - kafka
+      db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
     ports:
       - "8090:8090"
     volumes:
       - ./config/storage:/app/config
       - ./logs/storage:/app/logs
 
+
   processing:
     build:
       context: ./processing
       dockerfile: Dockerfile
     depends_on:
-      - storage
+      storage:
+        condition: service_started
     ports:
       - "8100:8100"
     volumes:
@@ -79,7 +100,8 @@ services:
       context: ./analyzer
       dockerfile: Dockerfile
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     ports:
       - "8110:8110"
     volumes:
