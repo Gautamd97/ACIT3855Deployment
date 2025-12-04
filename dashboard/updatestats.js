@@ -2,6 +2,7 @@ const PROCESSING_STATS_API_URL = "/processing/stats"
 
 const randomIndex = () => Math.floor(Math.random() * 100) + 1;
 
+const HEALTH_STATUS_API_URL = "http://gautamdhoopar3855.westus3.cloudapp.azure.com:8120/status";
 
 const ANALYZER_API_URL = {
     stats: "/analyzer/stats",
@@ -48,6 +49,23 @@ const updateErrorMessages = (message) => {
         if (elem) { elem.remove() }
     }, 7000)
 }
+
+function updateHealth() {
+    fetch(HEALTH_STATUS_API_URL)
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("health-status").textContent =
+                JSON.stringify(data, null, 2);
+        })
+        .catch(err => {
+            console.error("Error fetching health status", err);
+            document.getElementById("health-status").textContent =
+                "Error fetching health status";
+        });
+}
+
+setInterval(updateHealth, 5000);
+updateHealth();
 
 const setup = () => {
     getStats()

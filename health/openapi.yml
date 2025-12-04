@@ -1,0 +1,23 @@
+openapi: "3.0.0"
+info:
+  title: Health Check Service
+  version: "1.0.0"
+
+paths:
+  /health:
+    get:
+      summary: Health of the health service
+      operationId: app.get_health
+      responses:
+        "200":
+          description: OK
+
+  /status:
+    get:
+      summary: Last known status of all services
+      operationId: app.get_overall_status
+      responses:
+        "200":
+          description: Status snapshot
+        "404":
+          description: No status yet
