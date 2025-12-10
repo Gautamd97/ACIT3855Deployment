@@ -73,7 +73,6 @@ def check_all_services():
     _save_status(data)
 
 def get_overall_status():
-    """Return last known status snapshot."""
     data = _load_status()
     if not data:
         return {"message": "No status collected yet"}, 404
@@ -81,7 +80,6 @@ def get_overall_status():
 
 
 def get_health():
-    """Health of THIS service."""
     return {
         "status": "healthy",
         "timestamp": _now_iso()

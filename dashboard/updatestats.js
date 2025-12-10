@@ -1,13 +1,25 @@
-const PROCESSING_STATS_API_URL = "/processing/stats"
+// const PROCESSING_STATS_API_URL = "/processing/stats"
+
+const PROCESSING_STATS_API_URL = "http://localhost:8100/stats"
 
 const randomIndex = () => Math.floor(Math.random() * 100) + 1;
 
-const HEALTH_STATUS_API_URL = "http://gautamdhoopar3855.westus3.cloudapp.azure.com:8120/status";
+const HEALTH_STATUS_API_URL = "http://localhost:8120/status";
+
+// const HEALTH_STATUS_API_URL = "http://gautamdhoopar3855.westus3.cloudapp.azure.com:8120/status";
+
+// const ANALYZER_API_URL = {
+//     stats: "/analyzer/stats",
+//     admission: () => `/analyzer/hospital/admission/history?index=${randomIndex()}`,
+//     capacity: () => `/analyzer/hospital/capacity/history?index=${randomIndex()}`
+// }
+
+// const HEALTH_STATUS_API_URL = "http://gautamdhoopar3855.westus3.cloudapp.azure.com:8120/status";
 
 const ANALYZER_API_URL = {
-    stats: "/analyzer/stats",
-    admission: () => `/analyzer/hospital/admission/history?index=${randomIndex()}`,
-    capacity: () => `/analyzer/hospital/capacity/history?index=${randomIndex()}`
+    stats: "http://localhost:8110/stats",
+    admission: () => `http://localhost:8110/hospital/admission/history?index=${randomIndex()}`,
+    capacity: () => `http://localhost:8110/hospital/capacity/history?index=${randomIndex()}`
 }
 
 const makeReq = (url, cb) => {
